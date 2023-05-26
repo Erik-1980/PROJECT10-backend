@@ -5,10 +5,10 @@ const adminMiddleware = require('../middlewares/adminMiddleware');
 const upload = require('../middlewares/multer');
 
 // Получение списка всех продуктов
-router.get('/', adminMiddleware, productController.getProducts);
+router.get('/products', productController.getProducts);
 
 // Создание нового продукта
-router.post('/', adminMiddleware, upload.single('image'), productController.createProducts);
+router.post('/product', adminMiddleware, upload.single('image'), productController.createProducts);
 
 // Создание новой категории
 router.post('/category', adminMiddleware, productController.createCategories);
@@ -17,16 +17,16 @@ router.post('/category', adminMiddleware, productController.createCategories);
 router.get('/category', productController.getCategories);
 
 // Обновление информации о продукте
-router.put('/update', adminMiddleware, productController.updateProduct);
+router.put('/updateproduct', adminMiddleware, productController.updateProducts);
+
+// Обновление информации о категории
+router.put('/updatecategory', adminMiddleware, productController.updateCategories);
 
 // Удаление продукта
-router.delete('/:id', adminMiddleware, productController.deleteProduct);
+router.delete('/product/:id', adminMiddleware, productController.deleteProduct);
 
 // Удаление категории
 router.delete('/category/:id', adminMiddleware, productController.deleteCategory);
-
-// Получение информации о конкретном продукте
-router.post('/onlyoneproduct', adminMiddleware, productController.getOneProduct);
 
 
 module.exports = router;

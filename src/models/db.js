@@ -52,7 +52,7 @@ const Users = sequelize.define('users', {
         type: Sequelize.STRING,
         allowNull: false
     },
-    adress: {
+    address: {
         type: Sequelize.STRING,
         allowNull: false
     },
@@ -103,6 +103,7 @@ const Products = sequelize.define('products', {
     },
     discount: {
         type: Sequelize.INTEGER,
+        allowNull: true,
         defaultValue: 0
     },
     image: {

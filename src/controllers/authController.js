@@ -16,7 +16,7 @@ exports.register = async (req, res, next) => {
   }
   try {
     const hashedPassword = CryptoJS.SHA256(userInfo.password).toString();
-    await User.createUser(userInfo.firstname, userInfo.lastname, userInfo.email, hashedPassword, userInfo.country, userInfo.region, userInfo.city, userInfo.adress, userInfo.phone, userInfo.gender);
+    await User.createUser(userInfo.firstname, userInfo.lastname, userInfo.email, hashedPassword, userInfo.country, userInfo.region, userInfo.city, userInfo.address, userInfo.phone, userInfo.gender);
     res.status(201).json({ message: 'You have successfully registered!'});
   } catch (error) {
     next(error);

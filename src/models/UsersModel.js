@@ -1,6 +1,6 @@
 const { Users } = require('./db');
 
-const createUser = async ( firstname, lastname, email, password, country, region, city, adress, phone, gender) => { // +
+const createUser = async ( firstname, lastname, email, password, country, region, city, address, phone, gender) => { // +
   try {
     const newUser = await Users.create({
       firstname: firstname,
@@ -10,7 +10,7 @@ const createUser = async ( firstname, lastname, email, password, country, region
       country: country,
       region: region,
       city: city,
-      adress: adress,
+      address: address,
       phone: phone,
       gender: gender
     });
@@ -40,7 +40,7 @@ const getUserByPhone = async (phone) => { // +
 
 const findAllUsers = async () => {// +
   try {
-    const users = await Users.findAll({ attributes: ['id', 'firstname', 'lastname', 'email', 'password', 'country', 'region', 'city', 'adress', 'phone', 'gender', 'createdAt', 'updatedAt'] });
+    const users = await Users.findAll({ attributes: ['id', 'firstname', 'lastname', 'email', 'password', 'country', 'region', 'city', 'address', 'phone', 'gender', 'createdAt', 'updatedAt'] });
     return users;
   } catch (error) {
     throw new Error(`Failed to get all users: ${error.message}`);
@@ -49,7 +49,7 @@ const findAllUsers = async () => {// +
 
 const findById = async (id) => {// +
   try {
-    const user = await Users.findOne({ attributes: ['id', 'name', 'lastname', 'email', 'adress', 'phone', 'verification', 'createdAt', 'updatedAt'], where: { id } });
+    const user = await Users.findOne({ attributes: ['id', 'name', 'lastname', 'email', 'address', 'phone', 'verification', 'createdAt', 'updatedAt'], where: { id } });
     return user;
   } catch (error) {
     throw new Error(`Failed to get user by id: ${error.message}`);

@@ -3,6 +3,9 @@ const { Categories } = require('./db');
 
 const createProduct = async (brand, name, model, price, quantity, discount, image, description, categoryId) => { //+
   try {
+    if (discount === "null" || discount === "undefined") {
+      discount = 0
+    };
     const newProduct = await Products.create({ brand, name, model, price, quantity, discount, image, description, categoryId });
     return newProduct;
   } catch (error) {
@@ -12,7 +15,7 @@ const createProduct = async (brand, name, model, price, quantity, discount, imag
 
 const createCategory = async (name, description) => { //+
   try {
-    const newProduct = await Categories.create({ name,  description });
+    const newProduct = await Categories.create({ name, description });
     return newProduct;
   } catch (error) {
     throw new Error(`Failed to create category: ${error.message}`);
@@ -46,10 +49,9 @@ const getAllCategories = async () => {
   }
 };
 
-const getProduct = async (value) => {
+const getProductByName = async (value) => {
   try {
-    const product = isNaN(value) ?
-    await Products.findOne({
+    const product = await Products.findOne({
       include: [
         {
           model: Categories,
@@ -57,22 +59,30 @@ const getProduct = async (value) => {
         }
       ],
       where: {
-        name: value 
+        name: value
       },
       raw: true
-    }) : 
-    await Products.findOne({
+    });
+    return product;
+  } catch (error) {
+    throw new Error(`Failed to get product: ${error.message}`);
+  }
+};
+
+const getProductById = async (id) => {
+  try {
+    const product = await Products.findOne({
       include: [
         {
           model: Categories,
-          attributes: ['name']
+          attributes: ['id'],
         }
       ],
       where: {
-        id: value 
+        id: id
       },
       raw: true
-    })
+    });
     return product;
   } catch (error) {
     throw new Error(`Failed to get product: ${error.message}`);
@@ -84,7 +94,7 @@ const getCategory = async (value) => {
     const category = await Categories.findOne({
       attributes: ['name'],
       where: {
-        name: value 
+        name: value
       }
     });
     return category;
@@ -93,15 +103,27 @@ const getCategory = async (value) => {
   }
 };
 
-const updateProduct = async (id, brand, name, model, price, quantity, image, description, categoryId) => {
+const updateProduct = async (id, brand, name, model, price, quantity, discount, image, description, categoryId) => {
   try {
     const updatedProduct = await Products.update(
-      { brand, name, model, price, quantity, image, description, categoryId },
+      { brand, name, model, price, quantity, discount, image, description, categoryId },
       { where: { id } }
     );
     return updatedProduct;
   } catch (error) {
     throw new Error(`Failed to update product: ${error.message}`);
+  }
+};
+
+const updateCategory = async (id, name, description) => {
+  try {
+    const updatedCategory = await Categories.update(
+      { name, description},
+      { where: { id } }
+    );
+    return updatedCategory;
+  } catch (error) {
+    throw new Error(`Failed to update category: ${error.message}`);
   }
 };
 
@@ -127,10 +149,12 @@ module.exports = {
   createProduct,
   createCategory,
   getAllProducts,
-  getProduct,
+  getProductByName,
+  getProductById,
   getCategory,
   getAllCategories,
   updateProduct,
   deleteProductById,
-  deleteCategoryById
+  deleteCategoryById,
+  updateCategory
 };
