@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const productController = require('../controllers/productController');
-const adminMiddleware = require('../middlewares/adminMiddleware');
+const adminMiddleware = require('../middlewares/adminMiddleWare');
 const upload = require('../middlewares/multer');
 
 // Получение списка всех продуктов

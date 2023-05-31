@@ -1,4 +1,4 @@
-const User  = require('../models/UsersModel');
+const User  = require('../models/usersModel');
 const CryptoJS = require('crypto-js');
 const jwt = require('jsonwebtoken');
 const { JWT_SECRET } = require('../config/config');
@@ -30,7 +30,7 @@ exports.login = async (req, res, next) => {
   try {
     const user = await User.getUserByUsername(values.email);
     if (!user || user.password !== hashedPassword) {
-      return res.status(401).json({ message: 'Invalid username or password' });
+      return res.status(401).json({ message_error: 'Invalid username or password' });
     }
     const token = generateToken(user.id, user.email, user.isAdmin, user.verification);
     res.json({ token });

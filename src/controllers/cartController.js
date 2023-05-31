@@ -1,5 +1,5 @@
-const Cart = require('../models/CartsModel');
-const Product = require('../models/ProductsModel');
+const Cart = require('../models/cartsModel');
+const Product = require('../models/productsModel');
 const { JWT_SECRET } = require('../config/config');
 const jwt = require('jsonwebtoken');
 

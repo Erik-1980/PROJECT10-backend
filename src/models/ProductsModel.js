@@ -6,6 +6,9 @@ const createProduct = async (brand, name, model, price, quantity, discount, imag
     if (discount === "null" || discount === "undefined") {
       discount = 0
     };
+    if (description === "undefined") {
+      description = null
+    };
     const newProduct = await Products.create({ brand, name, model, price, quantity, discount, image, description, categoryId });
     return newProduct;
   } catch (error) {

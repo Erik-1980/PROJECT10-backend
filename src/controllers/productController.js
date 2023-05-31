@@ -1,4 +1,5 @@
-const Product = require('../models/ProductsModel');
+const { log } = require('console');
+const Product = require('../models/productsModel');
 const fs = require('fs');
 
 
@@ -37,7 +38,6 @@ exports.createCategories = async (req, res, next) => { //+
   const { name, description } = req.body;
   try {
     const repeat_name = await Product.getCategory(name);
-    console.log(repeat_name)
     if (repeat_name) {
       return res.status(409).json({ message_error: 'A category with this name already exists!' });
     }
