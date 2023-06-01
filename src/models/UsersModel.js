@@ -49,7 +49,7 @@ const findAllUsers = async () => {// +
 
 const findById = async (id) => {// +
   try {
-    const user = await Users.findOne({ attributes: ['id', 'name', 'lastname', 'email', 'address', 'phone', 'verification', 'createdAt', 'updatedAt'], where: { id } });
+    const user = await Users.findOne({ attributes: ['id'], where: { id } });
     return user;
   } catch (error) {
     throw new Error(`Failed to get user by id: ${error.message}`);
@@ -65,6 +65,18 @@ const deleteUserById = async (id) => {// +
   }
 };
 
+const updateVerify = async (id) => {
+  try {
+    const updatedVerify = await Users.update(
+      { verification: true },
+      { where: { id } }
+    );
+    return updatedVerify;
+  } catch (error) {
+    throw new Error(`Failed to update: ${error.message}`);
+  }
+};
+
 module.exports = {
   createUser,
   getUserByUsername,
@@ -72,4 +84,5 @@ module.exports = {
   findAllUsers,
   findById,
   deleteUserById,
+  updateVerify
 };

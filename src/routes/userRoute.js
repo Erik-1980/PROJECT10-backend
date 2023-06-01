@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/userController');
-const adminMiddleware = require('../middlewares/adminMiddleware');
+const adminMiddleware = require('../middlewares/adminMiddleWare');
 
 
 // Получение списка всех пользователей

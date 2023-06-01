@@ -1,23 +1,24 @@
-const User  = require('../models/usersModel');
+const User = require('../models/usersModel');
 const CryptoJS = require('crypto-js');
 const jwt = require('jsonwebtoken');
-const { JWT_SECRET } = require('../config/config');
+const { JWT_SECRET, JWT_SECRET_VERIFY, port } = require('../config/config');
+const { sendMail } = require('../routes/mailer');
 
 // Регистрация
 exports.register = async (req, res, next) => {
   const { userInfo } = req.body;
   const user = await User.getUserByUsername(userInfo.email);
-  if(user != undefined && userInfo.email===user.email){
-    return res.status(409).json({ error_message: 'User with this e-mail is already registered!'});
+  if (user != undefined && userInfo.email === user.email) {
+    return res.status(409).json({ error_message: 'User with this e-mail is already registered!' });
   }
   const user_phone = await User.getUserByPhone(userInfo.phone);
-  if(user_phone != undefined && userInfo.phone===user_phone.phone){
-    return res.status(409).json({ error_message: 'User with this phone is already registered!'});
+  if (user_phone != undefined && userInfo.phone === user_phone.phone) {
+    return res.status(409).json({ error_message: 'User with this phone is already registered!' });
   }
   try {
     const hashedPassword = CryptoJS.SHA256(userInfo.password).toString();
     await User.createUser(userInfo.firstname, userInfo.lastname, userInfo.email, hashedPassword, userInfo.country, userInfo.region, userInfo.city, userInfo.address, userInfo.phone, userInfo.gender);
-    res.status(201).json({ message: 'You have successfully registered!'});
+    res.status(201).json({ message: 'You have successfully registered!' });
   } catch (error) {
     next(error);
   }
@@ -39,7 +40,41 @@ exports.login = async (req, res, next) => {
   }
 };
 
-// Обновление токена
+// Верификация
+exports.usersVerify = async (req, res, next) => {
+  const token = req.headers.authorization;
+  try {
+    const decodedToken = jwt.verify(token, JWT_SECRET);
+    const mail = decodedToken.email;
+    const tokenVerify = generateTokenFromVerify(decodedToken.id, decodedToken.email);
+    sendMail(mail, `http://localhost:${port}/auth/responseverify?token=${tokenVerify}`);
+    res.json({ message: 'Check your email for verification and follow the link, link will be valid for 5 minutes' });
+  } catch (error) {
+    next(error);
+  }
+};
+// Верификация ответ
+exports.responseVerify = async (req, res, next) => {
+  const { token } = req.query;
+  try {
+    const decodedToken = jwt.verify(token, JWT_SECRET_VERIFY);
+    if (decodedToken.id) {
+      const user = await User.findById(decodedToken.id);
+      if (user) {
+        const update = await User.updateVerify(decodedToken.id);
+        if(update){
+          return res.send('You have successfully passed verification');
+        } else {
+          return res.send('Please try again later');
+        };
+      };
+    };
+  } catch (error) {
+    next(error);
+  };
+};
+
+// Обновление токена запросов
 exports.refreshToken = async (req, res, next) => {
   const token = req.headers.authorization;
   try {
@@ -51,9 +86,16 @@ exports.refreshToken = async (req, res, next) => {
   }
 };
 
-// Генерация JWT токена
+// Генерация JWT токена запросов
 function generateToken(id, email, isAdmin, verification) {
   const secret = JWT_SECRET;
   const token = jwt.sign({ id, email, isAdmin, verification }, secret, { expiresIn: '1h' });
+  return token;
+}
+
+// Генерация JWT токена для верификации
+function generateTokenFromVerify(id, email) {
+  const secret = JWT_SECRET_VERIFY;
+  const token = jwt.sign({ id, email }, secret, { expiresIn: '5m' });
   return token;
 }
