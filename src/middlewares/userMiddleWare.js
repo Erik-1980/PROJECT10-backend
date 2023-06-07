@@ -5,7 +5,7 @@ module.exports = (req, res, next) => {
   const token = req.headers.authorization;
 
   if (!token) {
-    return res.status(401).json({ error: 'Unauthorized' });
+    return res.status(401).json({ error: 'Sorry, you are not logged in' });
   }
   try {
     const decodedToken = jwt.verify(token, JWT_SECRET);

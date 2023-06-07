@@ -8,10 +8,10 @@ exports.getCart = async (req, res, next) => {
   try {
     const token = req.headers.authorization;
     if (!token) {
-      return res.status(401).json({ error: 'Unauthorized' });
+      return res.status(401).json({ error: 'Sorry, you are not logged in' });
     };
     const decodedToken = jwt.verify(token, JWT_SECRET);
-    const cart = await Cart.findAllByUserId(decodedToken.userId);
+    const cart = await Cart.getCartByUserId(decodedToken.id);
     res.status(200).json({ cart });
   } catch (error) {
     next(error);
@@ -21,24 +21,23 @@ exports.getCart = async (req, res, next) => {
 // Добавление продукта в корзину user
 exports.addToCart = async (req, res, next) => {
   try {
-    const product = await Product.findById(req.params.id);
-    if (!product) {
-      return res.status(404).json({ error: 'Product not found' });
-    };
     const token = req.headers.authorization;
     if (!token) {
-      return res.status(401).json({ error: 'Unauthorized' });
+      return res.status(401).json({ error: 'Sorry, you are not logged in, you need to log in to add a product to the cart.' });
+    };
+    const product = await Product.getProductById(req.params.id);
+    if (!product || product.quantity === 0) {
+      return res.status(404).json({ error: 'Sorry, this product was not found or is out of stock. It will be available soon.' });
     };
     const decodedToken = jwt.verify(token, JWT_SECRET);
-    const user_product = await Cart.findByUserIdAndProductId(decodedToken.userId, product.id)
+    const user_product = await Cart.getCartByUserIdAndProductId(decodedToken.id, product.id);
     if (!user_product){
-      addcart = new Cart(decodedToken.userId, product.id, 1);
-      await addcart.save()
+      const addcart = await Cart.add(decodedToken.id, product.id);
+      res.status(201).json({ message: 'product added to cart!'})
+      return addcart
     } else {
-      user_product.quantity += 1;
-      await Cart.updateQuantity(decodedToken.userId, product.id, user_product.quantity)
+      res.status(409).json({ message_error: 'this product is already in your cart!'})
     }
-    res.status(201).json({ message: 'product added to cart!'})
   } catch (error) {
     next(error);
   }
@@ -49,39 +48,16 @@ exports.deleteFromCart = async (req, res, next) => {
   try {
     const token = req.headers.authorization;
     if (!token) {
-      return res.status(401).json({ error: 'Unauthorized' });
+      return res.status(401).json({ error: 'Sorry, you are not logged in, you need to log in to remove a product from cart.' });
     };
-    const decodedToken = jwt.verify(token, JWT_SECRET);
-    const product = await Cart.findByUserIdAndProductId(decodedToken.userId, req.params.id);
-    if (!product) {
+    jwt.verify(token, JWT_SECRET);
+    const cart = await Cart.getCartById(req.params.id);
+    if (!cart) {
       return res.status(404).json({ error: 'Product not found' });
-    };
-    if (product.quantity>1){
-      product.quantity -= 1;
-      await Cart.updateQuantity(decodedToken.userId, req.params.id, product.quantity)
     } else {
-      await Cart.deleteCartByUserIdAndProductId(decodedToken.userId, req.params.id )
+      await Cart.deleteProductFromCart(req.params.id)
     }
     res.status(201).json({ message: 'product removed from cart!'})
-  } catch (error) {
-    next(error);
-  }
-};
-
-// Удаление всех продуктов из корзины user
-exports.deleteAllFromCart = async (req, res, next) => {
-  try {
-    const token = req.headers.authorization;
-    if (!token) {
-      return res.status(401).json({ error: 'Unauthorized' });
-    };
-    const decodedToken = jwt.verify(token, JWT_SECRET);
-    const product = await Cart.findAllByUserId(decodedToken.userId);
-    if (product.length===0) {
-      return res.status(404).json({ error: 'Product not found' });
-    }
-      await Cart.deleteAllCartsByUserId(decodedToken.userId)
-    res.status(201).json({ message: 'products removed from cart!'})
   } catch (error) {
     next(error);
   }

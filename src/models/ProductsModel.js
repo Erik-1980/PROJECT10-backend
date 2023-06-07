@@ -107,9 +107,23 @@ const getCategory = async (value) => {
 };
 
 const updateProduct = async (id, brand, name, model, price, quantity, discount, image, description, categoryId) => {
+  const product = await Products.findOne({
+    include: [
+      {
+        model: Categories,
+        attributes: ['id'],
+      }
+    ],
+    where: {
+      id: id
+    },
+    raw: true
+  });
+  let old_price = product.old_price;
+  product.price !== price ? old_price = product.price : old_price
   try {
     const updatedProduct = await Products.update(
-      { brand, name, model, price, quantity, discount, image, description, categoryId },
+      { brand, name, model, price, old_price, quantity, discount, image, description, categoryId },
       { where: { id } }
     );
     return updatedProduct;

@@ -1,17 +1,15 @@
 const express = require('express');
 const router = express.Router();
 const cartController = require('../controllers/cartController');
-
-// Добавление продукта в корзину
-router.post('/:id', cartController.addToCart);
+const userMiddleware = require('../middlewares/userMiddleWare');
 
 // Получение содержимого корзины текущего пользователя
-router.get('/all', cartController.getCart);
+router.get('/', userMiddleware, cartController.getCart);
 
-// Удаление всех продуктов из корзины
-router.delete('/all',  cartController.deleteAllFromCart);
+// Добавление продукта в корзину
+router.get('/:id', userMiddleware, cartController.addToCart);
 
 // Удаление продукта из корзины
-router.delete('/:id',  cartController.deleteFromCart);
+router.delete('/:id',  userMiddleware, cartController.deleteFromCart);
 
 module.exports = router;

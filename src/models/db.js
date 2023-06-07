@@ -97,6 +97,11 @@ const Products = sequelize.define('products', {
         type: Sequelize.FLOAT,
         allowNull: false
     },
+    old_price: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+        defaultValue: null
+    },
     quantity: {
         type: Sequelize.INTEGER,
         allowNull: false
@@ -143,19 +148,11 @@ const Orders = sequelize.define('orders', {
         primaryKey: true,
         autoIncrement: true
     },
-    productId: {
-        type: Sequelize.INTEGER,
-        allowNull: false
-    },
-    quantity: {
-        type: Sequelize.INTEGER,
-        allowNull: false
-    },
     order_status: {
         type: Sequelize.STRING,
         allowNull: false
     },
-    userId: {
+    cartId: {
         type: Sequelize.INTEGER,
         allowNull: false
     }
@@ -171,47 +168,7 @@ const Carts = sequelize.define('carts', {
         type: Sequelize.INTEGER,
         allowNull: false
     },
-    quantity: {
-        type: Sequelize.INTEGER,
-        allowNull: false
-    },
     userId: {
-        type: Sequelize.INTEGER,
-        allowNull: false
-    }
-});
-
-const CartsProducts = sequelize.define('cartsProducts', {
-    id: {
-        type: Sequelize.INTEGER,
-        primaryKey: true,
-        autoIncrement: true
-    },
-    cartId: {
-        type: Sequelize.INTEGER,
-        allowNull: false
-    },
-    productId: {
-        type: Sequelize.INTEGER,
-        allowNull: false
-    },
-    quantity: {
-        type: Sequelize.INTEGER,
-        allowNull: false
-    }
-});
-
-const OrdersProducts = sequelize.define('ordersProducts', {
-    id: {
-        type: Sequelize.INTEGER,
-        primaryKey: true,
-        autoIncrement: true
-    },
-    orderId: {
-        type: Sequelize.INTEGER,
-        allowNull: false
-    },
-    productId: {
         type: Sequelize.INTEGER,
         allowNull: false
     },
@@ -224,29 +181,14 @@ const OrdersProducts = sequelize.define('ordersProducts', {
 Users.hasOne(Carts);
 Carts.belongsTo(Users, {onDelete: 'CASCADE'});
 
+Products.hasMany(Carts);
+Carts.belongsTo(Products, {onDelete: 'CASCADE'});
+
 Categories.hasMany(Products);
 Products.belongsTo(Categories, {onDelete: 'CASCADE'});
 
-Users.hasMany(Orders);
-Orders.belongsTo(Users, {onDelete: 'CASCADE'});
-
-Carts.belongsToMany(Products, { through: 'CartsProducts' });
-Products.belongsToMany(Carts, { through: 'CartsProducts' });
-
-Carts.hasMany(CartsProducts, { onDelete: 'CASCADE' });
-CartsProducts.belongsTo(Carts);
-
-Products.hasMany(CartsProducts, { onDelete: 'CASCADE' });
-CartsProducts.belongsTo(Products);
-
-Products.belongsToMany(Orders, { through: 'OrdersProducts' });
-Orders.belongsToMany(Products, { through: 'OrdersProducts' });
-
-Orders.hasMany(OrdersProducts, { onDelete: 'CASCADE' });
-OrdersProducts.belongsTo(Orders);
-
-Products.hasMany(OrdersProducts, { onDelete: 'CASCADE' });
-OrdersProducts.belongsTo(Products);
+Orders.hasMany(Carts);
+Carts.belongsTo(Orders, {onDelete: 'CASCADE'});
 
 sequelize.sync()
     .then(() => {
