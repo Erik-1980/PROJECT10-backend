@@ -122,7 +122,11 @@ const Products = sequelize.define('products', {
     categoryId: {
         type: Sequelize.INTEGER,
         allowNull: false
-    }
+    },
+    proporties: {
+        type: Sequelize.STRING,
+        allowNull: true,
+    },
 });
 
 const Categories = sequelize.define('categories', {

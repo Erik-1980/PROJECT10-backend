@@ -1,7 +1,7 @@
 const { Products } = require('./db');
 const { Categories } = require('./db');
 
-const createProduct = async (brand, name, model, price, quantity, discount, image, description, categoryId) => { //+
+const createProduct = async (brand, name, model, price, quantity, discount, image, description, categoryId, proporties) => { //+
   try {
     if (discount === "null" || discount === "undefined") {
       discount = 0
@@ -9,7 +9,10 @@ const createProduct = async (brand, name, model, price, quantity, discount, imag
     if (description === "undefined") {
       description = null
     };
-    const newProduct = await Products.create({ brand, name, model, price, quantity, discount, image, description, categoryId });
+    if (proporties === "undefined") {
+      proporties = null
+    };
+    const newProduct = await Products.create({ brand, name, model, price, quantity, discount, image, description, categoryId, proporties });
     return newProduct;
   } catch (error) {
     throw new Error(`Failed to create product: ${error.message}`);
@@ -106,7 +109,7 @@ const getCategory = async (value) => {
   }
 };
 
-const updateProduct = async (id, brand, name, model, price, quantity, discount, image, description, categoryId) => {
+const updateProduct = async (id, brand, name, model, price, quantity, discount, image, description, categoryId, proporties) => {
   const product = await Products.findOne({
     include: [
       {
@@ -123,7 +126,7 @@ const updateProduct = async (id, brand, name, model, price, quantity, discount, 
   product.price !== price ? old_price = product.price : old_price
   try {
     const updatedProduct = await Products.update(
-      { brand, name, model, price, old_price, quantity, discount, image, description, categoryId },
+      { brand, name, model, price, old_price, quantity, discount, image, description, categoryId, proporties },
       { where: { id } }
     );
     return updatedProduct;
