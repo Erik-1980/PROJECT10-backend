@@ -1,7 +1,7 @@
 const { Products } = require('./db');
 const { Categories } = require('./db');
 
-const createProduct = async (brand, name, model, price, quantity, discount, image, description, categoryId, proporties) => { //+
+const createProduct = async (best, name, model, price, quantity, discount, image, description, categoryId, proporties) => { //+
   try {
     if (discount === "null" || discount === "undefined") {
       discount = 0
@@ -12,7 +12,7 @@ const createProduct = async (brand, name, model, price, quantity, discount, imag
     if (proporties === "undefined") {
       proporties = null
     };
-    const newProduct = await Products.create({ brand, name, model, price, quantity, discount, image, description, categoryId, proporties });
+    const newProduct = await Products.create({ best, name, model, price, quantity, discount, image, description, categoryId, proporties });
     return newProduct;
   } catch (error) {
     throw new Error(`Failed to create product: ${error.message}`);
@@ -55,17 +55,13 @@ const getAllCategories = async () => {
   }
 };
 
-const getProductByName = async (value) => {
+const getProductByName = async (name, model, category) => {
   try {
     const product = await Products.findOne({
-      include: [
-        {
-          model: Categories,
-          attributes: ['name'],
-        }
-      ],
       where: {
-        name: value
+        name: name,
+        model: model,
+        categoryId: category
       },
       raw: true
     });
@@ -109,7 +105,7 @@ const getCategory = async (value) => {
   }
 };
 
-const updateProduct = async (id, brand, name, model, price, quantity, discount, image, description, categoryId, proporties) => {
+const updateProduct = async (id, best, name, model, price, quantity, discount, image, description, categoryId, proporties) => {
   const product = await Products.findOne({
     include: [
       {
@@ -126,7 +122,7 @@ const updateProduct = async (id, brand, name, model, price, quantity, discount, 
   product.price !== price ? old_price = product.price : old_price
   try {
     const updatedProduct = await Products.update(
-      { brand, name, model, price, old_price, quantity, discount, image, description, categoryId, proporties },
+      { best, name, model, price, old_price, quantity, discount, image, description, categoryId, proporties },
       { where: { id } }
     );
     return updatedProduct;

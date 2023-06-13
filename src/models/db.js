@@ -81,9 +81,9 @@ const Products = sequelize.define('products', {
         primaryKey: true,
         autoIncrement: true
     },
-    brand: {
-        type: Sequelize.STRING,
-        allowNull: false,
+    best: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false
     },
     name: {
         type: Sequelize.STRING,
@@ -121,7 +121,8 @@ const Products = sequelize.define('products', {
     },
     categoryId: {
         type: Sequelize.INTEGER,
-        allowNull: false
+        allowNull: false,
+        primaryKey: true,
     },
     proporties: {
         type: Sequelize.STRING,
@@ -156,7 +157,15 @@ const Orders = sequelize.define('orders', {
         type: Sequelize.STRING,
         allowNull: false
     },
-    cartId: {
+    productId: {
+        type: Sequelize.INTEGER,
+        allowNull: false
+    },
+    userId: {
+        type: Sequelize.INTEGER,
+        allowNull: false
+    },
+    quantity: {
         type: Sequelize.INTEGER,
         allowNull: false
     }
@@ -170,10 +179,12 @@ const Carts = sequelize.define('carts', {
     },
     productId: {
         type: Sequelize.INTEGER,
+        primaryKey: true,
         allowNull: false
     },
     userId: {
         type: Sequelize.INTEGER,
+        primaryKey: true,
         allowNull: false
     },
     quantity: {
@@ -191,8 +202,8 @@ Carts.belongsTo(Products, {onDelete: 'CASCADE'});
 Categories.hasMany(Products);
 Products.belongsTo(Categories, {onDelete: 'CASCADE'});
 
-Orders.hasMany(Carts);
-Carts.belongsTo(Orders, {onDelete: 'CASCADE'});
+Orders.belongsTo(Users);
+Users.hasOne(Orders);
 
 sequelize.sync()
     .then(() => {

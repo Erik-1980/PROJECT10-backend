@@ -5,22 +5,20 @@ const fs = require('fs');
 
 // Создание нового продукта
 exports.createProducts = async (req, res, next) => {
-  const { brand, name, model, price, quantity, discount, description, categoryId, proporties = JSON.parse(proporties)} = req.body;
+  const { best, name, model, price, quantity, discount, description, categoryId, proporties = JSON.parse(proporties) } = req.body;
   const image = req.file && req.file.path;
   try {
-    const repeat_name = await Product.getProductByName(name);;
+    const repeat_name = await Product.getProductByName(name, model, categoryId);
     if (repeat_name) {
-      if (repeat_name.brand === brand && repeat_name.name === name && repeat_name.model === model && repeat_name.categoryId == categoryId) {
-        fs.unlink(`./${image}`, (err) => {
-          if (err) {
-            console.error(err);
-            res.status(500).send('Error deleting file');
-          }
-        });
-        return res.status(409).json({ message_error: 'A similar product already exists!' });
-      };
+      fs.unlink(`./${image}`, (err) => {
+        if (err) {
+          console.error(err);
+          res.status(500).send('Error deleting file');
+        }
+      });
+      return res.status(409).json({ message_error: 'A similar product already exists!' });
     };
-    await Product.createProduct(brand, name, model, price, quantity, discount, image, description, categoryId, proporties);
+    await Product.createProduct(best, name, model, price, quantity, discount, image, description, categoryId, proporties);
     res.status(201).json({ message: 'Product created successfully!' });
   } catch (err) {
     fs.unlink(`./${image}`, (err) => {
@@ -70,13 +68,17 @@ exports.getCategories = async (req, res, next) => {
 
 // Обновление продукта по id
 exports.updateProducts = async (req, res, next) => {
-  const { id, brand, name, model, price, quantity, discount, image, description, categoryId, proporties } = req.body;
+  const { id, best, name, model, price, quantity, discount, image, description, categoryId, proporties } = req.body;
   try {
+    const repeat_name = await Product.getProductByName(name, model, categoryId);
+    if (repeat_name && repeat_name.id !== id) {
+      return res.status(409).json({ message_error: 'A similar product already exists!' });
+    };
     if (proporties !== undefined && proporties !== null) {
-      await Product.updateProduct(id, brand, name, model, price, quantity, discount, image, description, categoryId, proporties);
+      await Product.updateProduct(id, best, name, model, price, quantity, discount, image, description, categoryId, proporties);
     } else {
-      await Product.updateProduct(id, brand, name, model, price, quantity, discount, image, description, categoryId);
-    };    
+      await Product.updateProduct(id, best, name, model, price, quantity, discount, image, description, categoryId);
+    };
     res.status(200).json({ message: 'Product updated successfully' });
   } catch (err) {
     next(err);
