@@ -11,8 +11,12 @@ exports.getCart = async (req, res, next) => {
       return res.status(401).json({ error: 'Sorry, you are not logged in' });
     };
     const decodedToken = jwt.verify(token, JWT_SECRET);
-    const cart = await Cart.getCartByUserId(decodedToken.id);
-    res.status(200).json({ cart });
+    if (decodedToken) {
+      const cart = await Cart.getCartByUserId(decodedToken.id);
+      res.status(200).json({ cart });
+    } else {
+      return res.status(401).json({ message_error: 'Sorry, you are not logged in' });
+    }
   } catch (error) {
     next(error);
   }
