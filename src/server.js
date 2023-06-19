@@ -11,6 +11,7 @@ const authRoutes = require("./routes/authRoute");
 const cartRoutes = require("./routes/cartRoute");
 const productRoutes = require("./routes/productRoute");
 const userRoutes = require("./routes/userRoute");
+const orderRoutes = require("./routes/orderRoute");
 
 app.get('/images/:name',(req,res)=>{
     const image_name = req.params.name;
@@ -26,6 +27,7 @@ app.use("/auth", authRoutes);
 app.use("/cart", cartRoutes);
 app.use("/product", productRoutes);
 app.use("/user", userRoutes);
+app.use("/order", orderRoutes);
 
 app.use((err, req, res, next) => {
   console.error(err.stack);

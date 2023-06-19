@@ -7,10 +7,4 @@ const adminMiddleware = require('../middlewares/adminMiddleWare');
 // Получение списка всех пользователей
 router.get('/', adminMiddleware, userController.getAllUsers);
 
-// Получение информации о пользователе
-router.get('/currentuser', adminMiddleware, userController.getUserById);
-
-// Удаление пользователя
-router.delete('/:id', adminMiddleware, userController.deleteUser);
-
 module.exports = router;

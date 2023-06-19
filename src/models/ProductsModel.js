@@ -131,10 +131,17 @@ const updateProduct = async (id, best, name, model, price, quantity, discount, i
   }
 };
 
+const updateProductQuantity = async (id, quantity) => {
+  await Products.update(
+    { quantity },
+    { where: { id } }
+  );
+};
+
 const updateCategory = async (id, name, description) => {
   try {
     const updatedCategory = await Categories.update(
-      { name, description},
+      { name, description },
       { where: { id } }
     );
     return updatedCategory;
@@ -172,5 +179,6 @@ module.exports = {
   updateProduct,
   deleteProductById,
   deleteCategoryById,
-  updateCategory
+  updateCategory,
+  updateProductQuantity
 };
