@@ -1,4 +1,5 @@
 const { Orders } = require('./db');
+const { Products } = require('./db');
 
 const createOrder = async (productId, userId, quantity) => {
   try {
@@ -10,6 +11,22 @@ const createOrder = async (productId, userId, quantity) => {
   }
 };
 
+const getAllOrders = async (userId) => {
+  try {
+    const orders = await Orders.findAll({
+      where: {
+        userId: userId
+      },
+      raw: true
+    });
+    return orders;
+  } catch (error) {
+    throw new Error(`Failed to get all products: ${error.message}`);
+  }
+};
+
+
 module.exports = {
-    createOrder
+    createOrder,
+    getAllOrders
 }

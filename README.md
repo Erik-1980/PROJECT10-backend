@@ -40,6 +40,7 @@ The server-side of the e-commerce project relies on the following dependencies:
 * Nodemailer: Library for sending emails.
 * Sequelize: Object-relational mapping (ORM) library for interacting with the database.
 * Crypto-js: Library for cryptographic functions.
+* Stripe: Integrated payment system for secure and seamless payment processing.
 
 ## Getting Started
 1. Install Node.js and MySQL on your server.
@@ -60,6 +61,7 @@ For more information on the technologies and libraries used in the server-side o
 * Multer: https://github.com/expressjs/multer
 * Nodemailer: https://nodemailer.com/
 * Sequelize: https://sequelize.org/
+* Stripe: https://stripe.com
 
 Feel free to explore the codebase and customize the project according to your specific requirements.
 

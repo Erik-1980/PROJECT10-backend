@@ -7,6 +7,18 @@ const stripe = require("stripe")(STRIPE_SECRET_KEY, {
   apiVersion: "2022-08-01",
 });
 
+exports.getOrders = async (req, res, next) => {
+  const token = req.headers.authorization;
+  const decodedToken = jwt.verify(token, JWT_SECRET);
+  const id = decodedToken.id
+  try {
+    const orders = await Order.getAllOrders(id);
+    res.status(200).json({ orders });
+  } catch (err) {
+    next(err);
+  }
+};
+
 exports.stripe = async (req, res, next) => {
   try {
     res.status(200).json({ publishableKey: STRIPE_PUBLISHABLE_KEY });

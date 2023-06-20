@@ -3,6 +3,8 @@ const router = express.Router();
 const orderController = require('../controllers/orderController');
 const userMiddleware = require('../middlewares/userMiddleWare');
 
+router.get('/', userMiddleware, orderController.getOrders);
+
 router.get('/config', userMiddleware, orderController.stripe);
 
 router.post('/create-payment-intent', userMiddleware, orderController.payment);
