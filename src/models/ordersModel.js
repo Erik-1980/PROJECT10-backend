@@ -1,5 +1,4 @@
 const { Orders } = require('./db');
-const { Products } = require('./db');
 
 const createOrder = async (productId, userId, quantity) => {
   try {
@@ -11,7 +10,7 @@ const createOrder = async (productId, userId, quantity) => {
   }
 };
 
-const getAllOrders = async (userId) => {
+const getOrders = async (userId) => {
   try {
     const orders = await Orders.findAll({
       where: {
@@ -21,12 +20,46 @@ const getAllOrders = async (userId) => {
     });
     return orders;
   } catch (error) {
+    throw new Error(`Failed to get all orders: ${error.message}`);
+  }
+};
+
+const getOrdersById = async (id) => {
+  try {
+    const order = await Orders.findAll({
+      where: {
+        id: id
+      },
+      raw: true
+    });
+    return order;
+  } catch (error) {
+    throw new Error(`Failed to get order: ${error.message}`);
+  }
+};
+
+const getAllOrders = async () => {
+  try {
+    const orders = await Orders.findAll({
+      raw: true
+    });
+    return orders;
+  } catch (error) {
     throw new Error(`Failed to get all products: ${error.message}`);
   }
 };
 
+const updateStatus = async (id, order_status) => {
+  await Orders.update(
+    { order_status },
+    { where: { id } }
+  );
+};
 
 module.exports = {
     createOrder,
-    getAllOrders
+    getOrders,
+    getAllOrders,
+    getOrdersById,
+    updateStatus
 }

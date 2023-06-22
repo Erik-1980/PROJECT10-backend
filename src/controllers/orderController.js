@@ -12,7 +12,16 @@ exports.getOrders = async (req, res, next) => {
   const decodedToken = jwt.verify(token, JWT_SECRET);
   const id = decodedToken.id
   try {
-    const orders = await Order.getAllOrders(id);
+    const orders = await Order.getOrders(id);
+    res.status(200).json({ orders });
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.getAllOrders = async (req, res, next) => {
+  try {
+    const orders = await Order.getAllOrders();
     res.status(200).json({ orders });
   } catch (err) {
     next(err);
@@ -63,6 +72,20 @@ exports.updatequantity = async (req, res, next) => {
       const new_quantity = product.quantity - quantity
       await Product.updateProductQuantity(id, new_quantity);
       await Order.createOrder(id, decodedToken.id, quantity);
+    };
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.updateOrderStatus = async (req, res, next) => {
+  const { id, newOrderStatus } = req.body;
+  console.log(id, newOrderStatus);
+  try {
+    const order = await Order.getOrdersById(id);
+    if (order) {
+      await Order.updateStatus(id, newOrderStatus);
+      res.status(200).json({ message: 'Status updated!' });
     };
   } catch (err) {
     next(err);
